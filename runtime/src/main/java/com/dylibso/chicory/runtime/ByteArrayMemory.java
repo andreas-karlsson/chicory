@@ -500,4 +500,157 @@ public final class ByteArrayMemory implements Memory {
     public void drop(int segment) {
         dataSegments[segment] = PassiveDataSegment.EMPTY;
     }
+
+    @Override
+    public int atomicLoadInt(int addr) {
+        try {
+            return (int) INT_ARR_HANDLE.getVolatile(buffer, addr);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public long atomicLoadU32(int addr) {
+        return Integer.toUnsignedLong(atomicLoadInt(addr));
+    }
+
+    @Override
+    public long atomicLoadLong(int addr) {
+        try {
+            return (long) LONG_ARR_HANDLE.getVolatile(buffer, addr);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    @Override
+    public void atomicStoreInt(int addr, int value) {
+        try {
+            INT_ARR_HANDLE.setVolatile(buffer, addr, value);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public void atomicStoreLong(int addr, long value) {
+        try {
+            LONG_ARR_HANDLE.setVolatile(buffer, addr, value);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    @Override
+    public int atomicAddInt(int addr, int delta) {
+        try {
+            return (int) INT_ARR_HANDLE.getAndAdd(buffer, addr, delta);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public int atomicAndInt(int addr, int mask) {
+        try {
+            return (int) INT_ARR_HANDLE.getAndBitwiseAnd(buffer, addr, mask);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public int atomicOrInt(int addr, int mask) {
+        try {
+            return (int) INT_ARR_HANDLE.getAndBitwiseOr(buffer, addr, mask);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public int atomicXorInt(int addr, int mask) {
+        try {
+            return (int) INT_ARR_HANDLE.getAndBitwiseXor(buffer, addr, mask);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public int atomicXchgInt(int addr, int value) {
+        try {
+            return (int) INT_ARR_HANDLE.getAndSet(buffer, addr, value);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public int atomicCmpxchgInt(int addr, int expected, int replacement) {
+        try {
+            return (int) INT_ARR_HANDLE.compareAndExchange(buffer, addr, expected, replacement);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 4, sizeInBytes());
+        }
+    }
+
+    @Override
+    public long atomicAddLong(int addr, long delta) {
+        try {
+            return (long) LONG_ARR_HANDLE.getAndAdd(buffer, addr, delta);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    @Override
+    public long atomicAndLong(int addr, long mask) {
+        try {
+            return (long) LONG_ARR_HANDLE.getAndBitwiseAnd(buffer, addr, mask);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    @Override
+    public long atomicOrLong(int addr, long mask) {
+        try {
+            return (long) LONG_ARR_HANDLE.getAndBitwiseOr(buffer, addr, mask);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    @Override
+    public long atomicXorLong(int addr, long mask) {
+        try {
+            return (long) LONG_ARR_HANDLE.getAndBitwiseXor(buffer, addr, mask);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    @Override
+    public long atomicXchgLong(int addr, long value) {
+        try {
+            return (long) LONG_ARR_HANDLE.getAndSet(buffer, addr, value);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    @Override
+    public long atomicCmpxchgLong(int addr, long expected, long replacement) {
+        try {
+            return (long) LONG_ARR_HANDLE.compareAndExchange(buffer, addr, expected, replacement);
+        } catch (RuntimeException e) {
+            throw outOfBoundsException(e, addr, 8, sizeInBytes());
+        }
+    }
+
+    // Note: VarHandle does not support atomic operations for byte/short array views.
+    // The default lock-based implementations from Memory interface are used for those.
+    // We could also use a cmpxchg loop to implement these ops based on ints
 }

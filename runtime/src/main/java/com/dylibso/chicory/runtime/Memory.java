@@ -32,6 +32,7 @@ public interface Memory {
 
     boolean shared();
 
+    @Deprecated
     Object lock(int address);
 
     int waitOn(int address, int expected, long timeout);
@@ -39,6 +40,272 @@ public interface Memory {
     int waitOn(int address, long expected, long timeout);
 
     int notify(int address, int maxThreads);
+
+    default int atomicLoadInt(int addr) {
+        synchronized (lock(addr)) {
+            return readInt(addr);
+        }
+    }
+
+    default long atomicLoadU32(int addr) {
+        synchronized (lock(addr)) {
+            return readU32(addr);
+        }
+    }
+
+    default long atomicLoadLong(int addr) {
+        synchronized (lock(addr)) {
+            return readLong(addr);
+        }
+    }
+
+    default short atomicLoadShort(int addr) {
+        synchronized (lock(addr)) {
+            return readShort(addr);
+        }
+    }
+
+    default long atomicLoadU16(int addr) {
+        synchronized (lock(addr)) {
+            return readU16(addr);
+        }
+    }
+
+    default byte atomicLoadByte(int addr) {
+        synchronized (lock(addr)) {
+            return read(addr);
+        }
+    }
+
+    default long atomicLoadU8(int addr) {
+        synchronized (lock(addr)) {
+            return readU8(addr);
+        }
+    }
+
+    default void atomicStoreInt(int addr, int value) {
+        synchronized (lock(addr)) {
+            writeI32(addr, value);
+        }
+    }
+
+    default void atomicStoreLong(int addr, long value) {
+        synchronized (lock(addr)) {
+            writeLong(addr, value);
+        }
+    }
+
+    default void atomicStoreShort(int addr, short value) {
+        synchronized (lock(addr)) {
+            writeShort(addr, value);
+        }
+    }
+
+    default void atomicStoreByte(int addr, byte value) {
+        synchronized (lock(addr)) {
+            writeByte(addr, value);
+        }
+    }
+
+    default int atomicAddInt(int addr, int delta) {
+        synchronized (lock(addr)) {
+            int val = readInt(addr);
+            writeI32(addr, val + delta);
+            return val;
+        }
+    }
+
+    default int atomicAndInt(int addr, int mask) {
+        synchronized (lock(addr)) {
+            int val = readInt(addr);
+            writeI32(addr, val & mask);
+            return val;
+        }
+    }
+
+    default int atomicOrInt(int addr, int mask) {
+        synchronized (lock(addr)) {
+            int val = readInt(addr);
+            writeI32(addr, val | mask);
+            return val;
+        }
+    }
+
+    default int atomicXorInt(int addr, int mask) {
+        synchronized (lock(addr)) {
+            int val = readInt(addr);
+            writeI32(addr, val ^ mask);
+            return val;
+        }
+    }
+
+    default int atomicXchgInt(int addr, int value) {
+        synchronized (lock(addr)) {
+            int val = readInt(addr);
+            writeI32(addr, value);
+            return val;
+        }
+    }
+
+    default int atomicCmpxchgInt(int addr, int expected, int replacement) {
+        synchronized (lock(addr)) {
+            int val = readInt(addr);
+            if (val == expected) {
+                writeI32(addr, replacement);
+            }
+            return val;
+        }
+    }
+
+    default long atomicAddLong(int addr, long delta) {
+        synchronized (lock(addr)) {
+            long val = readLong(addr);
+            writeLong(addr, val + delta);
+            return val;
+        }
+    }
+
+    default long atomicAndLong(int addr, long mask) {
+        synchronized (lock(addr)) {
+            long val = readLong(addr);
+            writeLong(addr, val & mask);
+            return val;
+        }
+    }
+
+    default long atomicOrLong(int addr, long mask) {
+        synchronized (lock(addr)) {
+            long val = readLong(addr);
+            writeLong(addr, val | mask);
+            return val;
+        }
+    }
+
+    default long atomicXorLong(int addr, long mask) {
+        synchronized (lock(addr)) {
+            long val = readLong(addr);
+            writeLong(addr, val ^ mask);
+            return val;
+        }
+    }
+
+    default long atomicXchgLong(int addr, long value) {
+        synchronized (lock(addr)) {
+            long val = readLong(addr);
+            writeLong(addr, value);
+            return val;
+        }
+    }
+
+    default long atomicCmpxchgLong(int addr, long expected, long replacement) {
+        synchronized (lock(addr)) {
+            long val = readLong(addr);
+            if (val == expected) {
+                writeLong(addr, replacement);
+            }
+            return val;
+        }
+    }
+
+    default short atomicAddShort(int addr, short delta) {
+        synchronized (lock(addr)) {
+            short val = readShort(addr);
+            writeShort(addr, (short) (val + delta));
+            return val;
+        }
+    }
+
+    default short atomicAndShort(int addr, short mask) {
+        synchronized (lock(addr)) {
+            short val = readShort(addr);
+            writeShort(addr, (short) (val & mask));
+            return val;
+        }
+    }
+
+    default short atomicOrShort(int addr, short mask) {
+        synchronized (lock(addr)) {
+            short val = readShort(addr);
+            writeShort(addr, (short) (val | mask));
+            return val;
+        }
+    }
+
+    default short atomicXorShort(int addr, short mask) {
+        synchronized (lock(addr)) {
+            short val = readShort(addr);
+            writeShort(addr, (short) (val ^ mask));
+            return val;
+        }
+    }
+
+    default short atomicXchgShort(int addr, short value) {
+        synchronized (lock(addr)) {
+            short val = readShort(addr);
+            writeShort(addr, value);
+            return val;
+        }
+    }
+
+    default short atomicCmpxchgShort(int addr, short expected, short replacement) {
+        synchronized (lock(addr)) {
+            short val = readShort(addr);
+            if (val == expected) {
+                writeShort(addr, replacement);
+            }
+            return val;
+        }
+    }
+
+    default byte atomicAddByte(int addr, byte delta) {
+        synchronized (lock(addr)) {
+            byte val = read(addr);
+            writeByte(addr, (byte) (val + delta));
+            return val;
+        }
+    }
+
+    default byte atomicAndByte(int addr, byte mask) {
+        synchronized (lock(addr)) {
+            byte val = read(addr);
+            writeByte(addr, (byte) (val & mask));
+            return val;
+        }
+    }
+
+    default byte atomicOrByte(int addr, byte mask) {
+        synchronized (lock(addr)) {
+            byte val = read(addr);
+            writeByte(addr, (byte) (val | mask));
+            return val;
+        }
+    }
+
+    default byte atomicXorByte(int addr, byte mask) {
+        synchronized (lock(addr)) {
+            byte val = read(addr);
+            writeByte(addr, (byte) (val ^ mask));
+            return val;
+        }
+    }
+
+    default byte atomicXchgByte(int addr, byte value) {
+        synchronized (lock(addr)) {
+            byte val = read(addr);
+            writeByte(addr, value);
+            return val;
+        }
+    }
+
+    default byte atomicCmpxchgByte(int addr, byte expected, byte replacement) {
+        synchronized (lock(addr)) {
+            byte val = read(addr);
+            if (val == expected) {
+                writeByte(addr, replacement);
+            }
+            return val;
+        }
+    }
 
     void initialize(Instance instance, DataSegment[] dataSegments);
 
