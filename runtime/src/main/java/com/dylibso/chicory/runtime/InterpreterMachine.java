@@ -2181,7 +2181,7 @@ public class InterpreterMachine implements Machine {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadInt(ptr);
+        var val = instance.memory().atomicReadInt(ptr);
         stack.push(val);
     }
 
@@ -2190,19 +2190,19 @@ public class InterpreterMachine implements Machine {
         if (ptr % 8 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadLong(ptr);
+        var val = instance.memory().atomicReadLong(ptr);
         stack.push(val);
     }
 
     private static void I64_ATOMIC_LOAD8_U(MStack stack, Instance instance, Operands operands) {
         var ptr = readMemPtr(stack, operands);
-        var val = instance.memory().atomicLoadByte(ptr);
+        var val = instance.memory().atomicReadByte(ptr);
         stack.push(Byte.toUnsignedLong(val));
     }
 
     private static void I32_ATOMIC_LOAD8_U(MStack stack, Instance instance, Operands operands) {
         var ptr = readMemPtr(stack, operands);
-        var val = instance.memory().atomicLoadByte(ptr);
+        var val = instance.memory().atomicReadByte(ptr);
         stack.push(Byte.toUnsignedLong(val));
     }
 
@@ -2211,7 +2211,7 @@ public class InterpreterMachine implements Machine {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadShort(ptr);
+        var val = instance.memory().atomicReadShort(ptr);
         stack.push(Short.toUnsignedLong(val));
     }
 
@@ -2220,7 +2220,7 @@ public class InterpreterMachine implements Machine {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadShort(ptr);
+        var val = instance.memory().atomicReadShort(ptr);
         stack.push(Short.toUnsignedLong(val));
     }
 
@@ -2229,7 +2229,7 @@ public class InterpreterMachine implements Machine {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadInt(ptr);
+        var val = instance.memory().atomicReadInt(ptr);
         stack.push(Integer.toUnsignedLong(val));
     }
 
@@ -2239,13 +2239,13 @@ public class InterpreterMachine implements Machine {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        instance.memory().atomicStoreInt(ptr, value);
+        instance.memory().atomicWriteInt(ptr, value);
     }
 
     private static void I64_ATOMIC_STORE8(MStack stack, Instance instance, Operands operands) {
         var value = (byte) stack.pop();
         var ptr = readMemPtr(stack, operands);
-        instance.memory().atomicStoreByte(ptr, value);
+        instance.memory().atomicWriteByte(ptr, value);
     }
 
     private static void I64_ATOMIC_STORE16(MStack stack, Instance instance, Operands operands) {
@@ -2254,7 +2254,7 @@ public class InterpreterMachine implements Machine {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        instance.memory().atomicStoreShort(ptr, value);
+        instance.memory().atomicWriteShort(ptr, value);
     }
 
     private static void I64_ATOMIC_STORE32(MStack stack, Instance instance, Operands operands) {
@@ -2263,7 +2263,7 @@ public class InterpreterMachine implements Machine {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        instance.memory().atomicStoreInt(ptr, (int) value);
+        instance.memory().atomicWriteInt(ptr, (int) value);
     }
 
     private static void I64_ATOMIC_STORE(MStack stack, Instance instance, Operands operands) {
@@ -2272,7 +2272,7 @@ public class InterpreterMachine implements Machine {
         if (ptr % 8 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        instance.memory().atomicStoreLong(ptr, value);
+        instance.memory().atomicWriteLong(ptr, value);
     }
 
     private static void I32_ATOMIC_RMW(

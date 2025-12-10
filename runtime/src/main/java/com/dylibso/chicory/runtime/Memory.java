@@ -41,49 +41,49 @@ public interface Memory {
 
     int notify(int address, int maxThreads);
 
-    default int atomicLoadInt(int addr) {
+    default int atomicReadInt(int addr) {
         synchronized (lock(addr)) {
             return readInt(addr);
         }
     }
 
-    default long atomicLoadLong(int addr) {
+    default long atomicReadLong(int addr) {
         synchronized (lock(addr)) {
             return readLong(addr);
         }
     }
 
-    default short atomicLoadShort(int addr) {
+    default short atomicReadShort(int addr) {
         synchronized (lock(addr)) {
             return readShort(addr);
         }
     }
 
-    default byte atomicLoadByte(int addr) {
+    default byte atomicReadByte(int addr) {
         synchronized (lock(addr)) {
             return read(addr);
         }
     }
 
-    default void atomicStoreInt(int addr, int value) {
+    default void atomicWriteInt(int addr, int value) {
         synchronized (lock(addr)) {
             writeI32(addr, value);
         }
     }
 
-    default void atomicStoreLong(int addr, long value) {
+    default void atomicWriteLong(int addr, long value) {
         synchronized (lock(addr)) {
             writeLong(addr, value);
         }
     }
 
-    default void atomicStoreShort(int addr, short value) {
+    default void atomicWriteShort(int addr, short value) {
         synchronized (lock(addr)) {
             writeShort(addr, value);
         }
     }
 
-    default void atomicStoreByte(int addr, byte value) {
+    default void atomicWriteByte(int addr, byte value) {
         synchronized (lock(addr)) {
             writeByte(addr, value);
         }

@@ -503,7 +503,7 @@ public final class ByteArrayMemory implements Memory {
     }
 
     @Override
-    public int atomicLoadInt(int addr) {
+    public int atomicReadInt(int addr) {
         try {
             return (int) INT_ARR_HANDLE.getVolatile(buffer, addr);
         } catch (RuntimeException e) {
@@ -512,7 +512,7 @@ public final class ByteArrayMemory implements Memory {
     }
 
     @Override
-    public long atomicLoadLong(int addr) {
+    public long atomicReadLong(int addr) {
         try {
             return (long) LONG_ARR_HANDLE.getVolatile(buffer, addr);
         } catch (RuntimeException e) {
@@ -521,7 +521,7 @@ public final class ByteArrayMemory implements Memory {
     }
 
     @Override
-    public void atomicStoreInt(int addr, int value) {
+    public void atomicWriteInt(int addr, int value) {
         try {
             INT_ARR_HANDLE.setVolatile(buffer, addr, value);
         } catch (RuntimeException e) {
@@ -530,7 +530,7 @@ public final class ByteArrayMemory implements Memory {
     }
 
     @Override
-    public void atomicStoreLong(int addr, long value) {
+    public void atomicWriteLong(int addr, long value) {
         try {
             LONG_ARR_HANDLE.setVolatile(buffer, addr, value);
         } catch (RuntimeException e) {

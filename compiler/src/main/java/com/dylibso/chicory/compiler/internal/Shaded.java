@@ -169,7 +169,7 @@ public final class Shaded {
 
     public static int memoryAtomicIntByteRead(int base, int offset, Memory memory) {
         var ptr = getAddr(base, offset);
-        return memory.atomicLoadByte(ptr) & 0xFF;
+        return memory.atomicReadByte(ptr) & 0xFF;
     }
 
     public static int memoryAtomicIntShortRead(int base, int offset, Memory memory) {
@@ -177,7 +177,7 @@ public final class Shaded {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        return memory.atomicLoadShort(ptr) & 0xFFFF;
+        return memory.atomicReadShort(ptr) & 0xFFFF;
     }
 
     public static int memoryAtomicIntRead(int base, int offset, Memory memory) {
@@ -185,7 +185,7 @@ public final class Shaded {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        return memory.atomicLoadInt(ptr);
+        return memory.atomicReadInt(ptr);
     }
 
     public static long memoryAtomicLongRead(int base, int offset, Memory memory) {
@@ -193,12 +193,12 @@ public final class Shaded {
         if (ptr % 8 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        return memory.atomicLoadLong(ptr);
+        return memory.atomicReadLong(ptr);
     }
 
     public static long memoryAtomicLongByteRead(int base, int offset, Memory memory) {
         var ptr = getAddr(base, offset);
-        return Byte.toUnsignedLong(memory.atomicLoadByte(ptr));
+        return Byte.toUnsignedLong(memory.atomicReadByte(ptr));
     }
 
     public static long memoryAtomicLongShortRead(int base, int offset, Memory memory) {
@@ -206,7 +206,7 @@ public final class Shaded {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        return Short.toUnsignedLong(memory.atomicLoadShort(ptr));
+        return Short.toUnsignedLong(memory.atomicReadShort(ptr));
     }
 
     public static long memoryAtomicLongIntRead(int base, int offset, Memory memory) {
@@ -214,7 +214,7 @@ public final class Shaded {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        return Integer.toUnsignedLong(memory.atomicLoadInt(ptr));
+        return Integer.toUnsignedLong(memory.atomicReadInt(ptr));
     }
 
     public static void memoryAtomicIntWrite(int base, int value, int offset, Memory memory) {
@@ -222,12 +222,12 @@ public final class Shaded {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        memory.atomicStoreInt(ptr, value);
+        memory.atomicWriteInt(ptr, value);
     }
 
     public static void memoryAtomicIntByteWrite(int base, byte value, int offset, Memory memory) {
         var ptr = getAddr(base, offset);
-        memory.atomicStoreByte(ptr, value);
+        memory.atomicWriteByte(ptr, value);
     }
 
     public static void memoryAtomicIntShortWrite(int base, short value, int offset, Memory memory) {
@@ -235,7 +235,7 @@ public final class Shaded {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        memory.atomicStoreShort(ptr, value);
+        memory.atomicWriteShort(ptr, value);
     }
 
     public static void memoryAtomicLongWrite(int base, long value, int offset, Memory memory) {
@@ -243,12 +243,12 @@ public final class Shaded {
         if (ptr % 8 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        memory.atomicStoreLong(ptr, value);
+        memory.atomicWriteLong(ptr, value);
     }
 
     public static void memoryAtomicLongByteWrite(int base, byte value, int offset, Memory memory) {
         var ptr = getAddr(base, offset);
-        memory.atomicStoreByte(ptr, value);
+        memory.atomicWriteByte(ptr, value);
     }
 
     public static void memoryAtomicLongShortWrite(
@@ -257,7 +257,7 @@ public final class Shaded {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        memory.atomicStoreShort(ptr, value);
+        memory.atomicWriteShort(ptr, value);
     }
 
     public static void memoryAtomicLongIntWrite(int base, int value, int offset, Memory memory) {
@@ -265,7 +265,7 @@ public final class Shaded {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        memory.atomicStoreInt(ptr, value);
+        memory.atomicWriteInt(ptr, value);
     }
 
     // let the following memory access throw if the base is negative
