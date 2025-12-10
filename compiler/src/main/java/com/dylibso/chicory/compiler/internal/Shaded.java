@@ -198,7 +198,7 @@ public final class Shaded {
 
     public static long memoryAtomicLongByteRead(int base, int offset, Memory memory) {
         var ptr = getAddr(base, offset);
-        return memory.atomicLoadU8(ptr);
+        return Byte.toUnsignedLong(memory.atomicLoadByte(ptr));
     }
 
     public static long memoryAtomicLongShortRead(int base, int offset, Memory memory) {
@@ -206,7 +206,7 @@ public final class Shaded {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        return memory.atomicLoadU16(ptr);
+        return Short.toUnsignedLong(memory.atomicLoadShort(ptr));
     }
 
     public static long memoryAtomicLongIntRead(int base, int offset, Memory memory) {
@@ -214,7 +214,7 @@ public final class Shaded {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        return memory.atomicLoadU32(ptr);
+        return Integer.toUnsignedLong(memory.atomicLoadInt(ptr));
     }
 
     public static void memoryAtomicIntWrite(int base, int value, int offset, Memory memory) {

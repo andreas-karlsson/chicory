@@ -47,12 +47,6 @@ public interface Memory {
         }
     }
 
-    default long atomicLoadU32(int addr) {
-        synchronized (lock(addr)) {
-            return readU32(addr);
-        }
-    }
-
     default long atomicLoadLong(int addr) {
         synchronized (lock(addr)) {
             return readLong(addr);
@@ -65,21 +59,9 @@ public interface Memory {
         }
     }
 
-    default long atomicLoadU16(int addr) {
-        synchronized (lock(addr)) {
-            return readU16(addr);
-        }
-    }
-
     default byte atomicLoadByte(int addr) {
         synchronized (lock(addr)) {
             return read(addr);
-        }
-    }
-
-    default long atomicLoadU8(int addr) {
-        synchronized (lock(addr)) {
-            return readU8(addr);
         }
     }
 

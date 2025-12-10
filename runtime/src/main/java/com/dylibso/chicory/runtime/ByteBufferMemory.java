@@ -61,6 +61,7 @@ public final class ByteBufferMemory implements Memory {
     private final Map<Integer, AtomicInteger> notifyInProgress;
 
     @Override
+    @Deprecated
     public Object lock(int address) {
         if (!shared()) {
             // disable locking

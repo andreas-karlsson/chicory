@@ -75,6 +75,7 @@ public final class ByteArrayMemory implements Memory {
     private final Map<Integer, AtomicInteger> notifyInProgress;
 
     @Override
+    @Deprecated
     public Object lock(int address) {
         if (!shared()) {
             // disable locking
@@ -508,11 +509,6 @@ public final class ByteArrayMemory implements Memory {
         } catch (RuntimeException e) {
             throw outOfBoundsException(e, addr, 4, sizeInBytes());
         }
-    }
-
-    @Override
-    public long atomicLoadU32(int addr) {
-        return Integer.toUnsignedLong(atomicLoadInt(addr));
     }
 
     @Override

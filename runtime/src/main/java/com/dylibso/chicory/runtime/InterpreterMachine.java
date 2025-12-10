@@ -2196,14 +2196,14 @@ public class InterpreterMachine implements Machine {
 
     private static void I64_ATOMIC_LOAD8_U(MStack stack, Instance instance, Operands operands) {
         var ptr = readMemPtr(stack, operands);
-        var val = instance.memory().atomicLoadU8(ptr);
-        stack.push(val);
+        var val = instance.memory().atomicLoadByte(ptr);
+        stack.push(Byte.toUnsignedLong(val));
     }
 
     private static void I32_ATOMIC_LOAD8_U(MStack stack, Instance instance, Operands operands) {
         var ptr = readMemPtr(stack, operands);
-        var val = instance.memory().atomicLoadU8(ptr);
-        stack.push(val);
+        var val = instance.memory().atomicLoadByte(ptr);
+        stack.push(Byte.toUnsignedLong(val));
     }
 
     private static void I32_ATOMIC_LOAD16_U(MStack stack, Instance instance, Operands operands) {
@@ -2211,8 +2211,8 @@ public class InterpreterMachine implements Machine {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadU16(ptr);
-        stack.push(val);
+        var val = instance.memory().atomicLoadShort(ptr);
+        stack.push(Short.toUnsignedLong(val));
     }
 
     private static void I64_ATOMIC_LOAD16_U(MStack stack, Instance instance, Operands operands) {
@@ -2220,8 +2220,8 @@ public class InterpreterMachine implements Machine {
         if (ptr % 2 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadU16(ptr);
-        stack.push(val);
+        var val = instance.memory().atomicLoadShort(ptr);
+        stack.push(Short.toUnsignedLong(val));
     }
 
     private static void I64_ATOMIC_LOAD32_U(MStack stack, Instance instance, Operands operands) {
@@ -2229,8 +2229,8 @@ public class InterpreterMachine implements Machine {
         if (ptr % 4 != 0) {
             throw new InvalidException("unaligned atomic");
         }
-        var val = instance.memory().atomicLoadU32(ptr);
-        stack.push(val);
+        var val = instance.memory().atomicLoadInt(ptr);
+        stack.push(Integer.toUnsignedLong(val));
     }
 
     private static void I32_ATOMIC_STORE(MStack stack, Instance instance, Operands operands) {
@@ -2390,8 +2390,7 @@ public class InterpreterMachine implements Machine {
             default:
                 throw new IllegalStateException("Unexpected atomic op: " + op);
         }
-        // Zero-extend to long for the stack
-        stack.push(oldVal & 0xFFL);
+        stack.push(Byte.toUnsignedLong(oldVal));
     }
 
     private static void ATOMIC_RMW8_CMPXCHG_U(MStack stack, Instance instance, Operands operands) {
@@ -2399,8 +2398,7 @@ public class InterpreterMachine implements Machine {
         var expected = (byte) stack.pop();
         var ptr = readMemPtr(stack, operands);
         var oldVal = instance.memory().atomicCmpxchgByte(ptr, expected, replacement);
-        // Zero-extend to long for the stack
-        stack.push(oldVal & 0xFFL);
+        stack.push(Byte.toUnsignedLong(oldVal));
     }
 
     private static void ATOMIC_RMW16_U(
@@ -2433,8 +2431,7 @@ public class InterpreterMachine implements Machine {
             default:
                 throw new IllegalStateException("Unexpected atomic op: " + op);
         }
-        // Zero-extend to long for the stack
-        stack.push(oldVal & 0xFFFFL);
+        stack.push(Short.toUnsignedLong(oldVal));
     }
 
     private static void ATOMIC_RMW16_CMPXCHG_U(MStack stack, Instance instance, Operands operands) {
@@ -2445,8 +2442,7 @@ public class InterpreterMachine implements Machine {
             throw new InvalidException("unaligned atomic");
         }
         var oldVal = instance.memory().atomicCmpxchgShort(ptr, expected, replacement);
-        // Zero-extend to long for the stack
-        stack.push(oldVal & 0xFFFFL);
+        stack.push(Short.toUnsignedLong(oldVal));
     }
 
     private static void I64_ATOMIC_RMW32_U(
@@ -2479,7 +2475,6 @@ public class InterpreterMachine implements Machine {
             default:
                 throw new IllegalStateException("Unexpected atomic op: " + op);
         }
-        // Zero-extend to long for the stack (this is a 32-bit unsigned result for i64)
         stack.push(Integer.toUnsignedLong(oldVal));
     }
 
@@ -2492,7 +2487,6 @@ public class InterpreterMachine implements Machine {
             throw new InvalidException("unaligned atomic");
         }
         var oldVal = instance.memory().atomicCmpxchgInt(ptr, expected, replacement);
-        // Zero-extend to long for the stack
         stack.push(Integer.toUnsignedLong(oldVal));
     }
 
