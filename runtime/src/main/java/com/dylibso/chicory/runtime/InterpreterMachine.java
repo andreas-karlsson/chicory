@@ -921,59 +921,59 @@ public class InterpreterMachine implements Machine {
                     break;
                 case I32_ATOMIC_RMW8_ADD_U:
                 case I64_ATOMIC_RMW8_ADD_U:
-                    ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.ADD);
+                    I64_ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.ADD);
                     break;
                 case I32_ATOMIC_RMW8_SUB_U:
                 case I64_ATOMIC_RMW8_SUB_U:
-                    ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.SUB);
+                    I64_ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.SUB);
                     break;
                 case I32_ATOMIC_RMW8_AND_U:
                 case I64_ATOMIC_RMW8_AND_U:
-                    ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.AND);
+                    I64_ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.AND);
                     break;
                 case I32_ATOMIC_RMW8_OR_U:
                 case I64_ATOMIC_RMW8_OR_U:
-                    ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.OR);
+                    I64_ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.OR);
                     break;
                 case I32_ATOMIC_RMW8_XOR_U:
                 case I64_ATOMIC_RMW8_XOR_U:
-                    ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.XOR);
+                    I64_ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.XOR);
                     break;
                 case I32_ATOMIC_RMW8_XCHG_U:
                 case I64_ATOMIC_RMW8_XCHG_U:
-                    ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.XCHG);
+                    I64_ATOMIC_RMW8_U(stack, instance, operands, AtomicOp.XCHG);
                     break;
                 case I32_ATOMIC_RMW8_CMPXCHG_U:
                 case I64_ATOMIC_RMW8_CMPXCHG_U:
-                    ATOMIC_RMW8_CMPXCHG_U(stack, instance, operands);
+                    I64_ATOMIC_RMW8_CMPXCHG_U(stack, instance, operands);
                     break;
                 case I32_ATOMIC_RMW16_ADD_U:
                 case I64_ATOMIC_RMW16_ADD_U:
-                    ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.ADD);
+                    I64_ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.ADD);
                     break;
                 case I32_ATOMIC_RMW16_SUB_U:
                 case I64_ATOMIC_RMW16_SUB_U:
-                    ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.SUB);
+                    I64_ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.SUB);
                     break;
                 case I32_ATOMIC_RMW16_AND_U:
                 case I64_ATOMIC_RMW16_AND_U:
-                    ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.AND);
+                    I64_ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.AND);
                     break;
                 case I32_ATOMIC_RMW16_OR_U:
                 case I64_ATOMIC_RMW16_OR_U:
-                    ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.OR);
+                    I64_ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.OR);
                     break;
                 case I32_ATOMIC_RMW16_XOR_U:
                 case I64_ATOMIC_RMW16_XOR_U:
-                    ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.XOR);
+                    I64_ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.XOR);
                     break;
                 case I32_ATOMIC_RMW16_XCHG_U:
                 case I64_ATOMIC_RMW16_XCHG_U:
-                    ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.XCHG);
+                    I64_ATOMIC_RMW16_U(stack, instance, operands, AtomicOp.XCHG);
                     break;
                 case I32_ATOMIC_RMW16_CMPXCHG_U:
                 case I64_ATOMIC_RMW16_CMPXCHG_U:
-                    ATOMIC_RMW16_CMPXCHG_U(stack, instance, operands);
+                    I64_ATOMIC_RMW16_CMPXCHG_U(stack, instance, operands);
                     break;
                 case I64_ATOMIC_RMW32_ADD_U:
                     I64_ATOMIC_RMW32_U(stack, instance, operands, AtomicOp.ADD);
@@ -2363,7 +2363,7 @@ public class InterpreterMachine implements Machine {
         stack.push(oldVal);
     }
 
-    private static void ATOMIC_RMW8_U(
+    private static void I64_ATOMIC_RMW8_U(
             MStack stack, Instance instance, Operands operands, AtomicOp op) {
         var operand = (byte) stack.pop();
         var ptr = readMemPtr(stack, operands);
@@ -2393,7 +2393,8 @@ public class InterpreterMachine implements Machine {
         stack.push(Byte.toUnsignedLong(oldVal));
     }
 
-    private static void ATOMIC_RMW8_CMPXCHG_U(MStack stack, Instance instance, Operands operands) {
+    private static void I64_ATOMIC_RMW8_CMPXCHG_U(
+            MStack stack, Instance instance, Operands operands) {
         var replacement = (byte) stack.pop();
         var expected = (byte) stack.pop();
         var ptr = readMemPtr(stack, operands);
@@ -2401,7 +2402,7 @@ public class InterpreterMachine implements Machine {
         stack.push(Byte.toUnsignedLong(oldVal));
     }
 
-    private static void ATOMIC_RMW16_U(
+    private static void I64_ATOMIC_RMW16_U(
             MStack stack, Instance instance, Operands operands, AtomicOp op) {
         var operand = (short) stack.pop();
         var ptr = readMemPtr(stack, operands);
@@ -2434,7 +2435,8 @@ public class InterpreterMachine implements Machine {
         stack.push(Short.toUnsignedLong(oldVal));
     }
 
-    private static void ATOMIC_RMW16_CMPXCHG_U(MStack stack, Instance instance, Operands operands) {
+    private static void I64_ATOMIC_RMW16_CMPXCHG_U(
+            MStack stack, Instance instance, Operands operands) {
         var replacement = (short) stack.pop();
         var expected = (short) stack.pop();
         var ptr = readMemPtr(stack, operands);
