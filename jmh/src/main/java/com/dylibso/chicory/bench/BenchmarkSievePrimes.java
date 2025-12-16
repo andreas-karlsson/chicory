@@ -51,7 +51,7 @@ public class BenchmarkSievePrimes {
     @Param({"ByteArrayMemory", "ByteBufferMemory"})
     private String memoryType;
 
-    @Param({"interpreted", "compiled"})
+    @Param("compiled")
     private String machineType;
 
     private Instance instance;
