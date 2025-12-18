@@ -274,12 +274,8 @@ public final class ByteArrayMemory implements Memory {
                 var offsetExpr = segment.offsetInstructions();
                 var data = segment.data();
                 var offset = (int) computeConstantValue(instance, offsetExpr)[0];
-                checkBounds(
-                        offset,
-                        data.length,
-                        sizeInBytes(),
-                        (msg) -> new UninstantiableException(msg));
-                writeUnchecked(offset, data, 0, data.length);
+                checkBounds(offset, data.length, sizeInBytes(), UninstantiableException::new);
+                write(offset, data, 0, data.length);
             } else if (s instanceof PassiveDataSegment) {
                 // Passive segment should be skipped
             } else {
@@ -305,6 +301,7 @@ public final class ByteArrayMemory implements Memory {
     private RuntimeException outOfBoundsException(RuntimeException e, int addr, int size) {
         if (e instanceof IndexOutOfBoundsException
                 || e instanceof IllegalArgumentException
+                || e instanceof NullPointerException
                 || e instanceof NegativeArraySizeException) {
             var limit = sizeInBytes();
             var errorMsg =
@@ -330,8 +327,10 @@ public final class ByteArrayMemory implements Memory {
         return PAGE_SIZE * nPages;
     }
 
-    // Unchecked write for internal use (bounds already verified)
-    private void writeUnchecked(int addr, byte[] data, int offset, int size) {
+    @Override
+    public void write(int addr, byte[] data, int offset, int size) {
+        checkBounds(offset, size, data.length, WasmRuntimeException::new);
+        checkBounds(addr, size, sizeInBytes(), WasmRuntimeException::new);
         while (size > 0) {
             int pageIdx = addr >>> PAGE_SHIFT;
             int pageOffset = addr & PAGE_MASK;
@@ -340,15 +339,6 @@ public final class ByteArrayMemory implements Memory {
             addr += chunk;
             offset += chunk;
             size -= chunk;
-        }
-    }
-
-    @Override
-    public void write(int addr, byte[] data, int offset, int size) {
-        try {
-            writeUnchecked(addr, data, offset, size);
-        } catch (RuntimeException e) {
-            throw outOfBoundsException(e, addr, size);
         }
     }
 
@@ -363,24 +353,21 @@ public final class ByteArrayMemory implements Memory {
 
     @Override
     public byte[] readBytes(int addr, int len) {
-        try {
-            byte[] result = new byte[len];
-            int destOffset = 0;
-            int remaining = len;
-            int a = addr;
-            while (remaining > 0) {
-                int pageIdx = a >>> PAGE_SHIFT;
-                int pageOffset = a & PAGE_MASK;
-                int chunk = Math.min(remaining, PAGE_SIZE - pageOffset);
-                System.arraycopy(pages[pageIdx], pageOffset, result, destOffset, chunk);
-                a += chunk;
-                destOffset += chunk;
-                remaining -= chunk;
-            }
-            return result;
-        } catch (RuntimeException e) {
-            throw outOfBoundsException(e, addr, len);
+        checkBounds(addr, len, sizeInBytes(), WasmRuntimeException::new);
+        byte[] result = new byte[len];
+        int destOffset = 0;
+        int remaining = len;
+        int a = addr;
+        while (remaining > 0) {
+            int pageIdx = a >>> PAGE_SHIFT;
+            int pageOffset = a & PAGE_MASK;
+            int chunk = Math.min(remaining, PAGE_SIZE - pageOffset);
+            System.arraycopy(pages[pageIdx], pageOffset, result, destOffset, chunk);
+            a += chunk;
+            destOffset += chunk;
+            remaining -= chunk;
         }
+        return result;
     }
 
     @Override
@@ -398,6 +385,7 @@ public final class ByteArrayMemory implements Memory {
     }
 
     private void writeI32Slow(int addr, int data) {
+        checkBounds(addr, 4, sizeInBytes(), WasmRuntimeException::new);
         writeByte(addr, (byte) data);
         writeByte(addr + 1, (byte) (data >>> 8));
         writeByte(addr + 2, (byte) (data >>> 16));
@@ -440,6 +428,7 @@ public final class ByteArrayMemory implements Memory {
     }
 
     private void writeLongSlow(int addr, long data) {
+        checkBounds(addr, 8, sizeInBytes(), WasmRuntimeException::new);
         writeByte(addr, (byte) data);
         writeByte(addr + 1, (byte) (data >>> 8));
         writeByte(addr + 2, (byte) (data >>> 16));
@@ -490,6 +479,7 @@ public final class ByteArrayMemory implements Memory {
     }
 
     private void writeShortSlow(int addr, short data) {
+        checkBounds(addr, 2, sizeInBytes(), WasmRuntimeException::new);
         writeByte(addr, (byte) data);
         writeByte(addr + 1, (byte) (data >>> 8));
     }
@@ -599,19 +589,37 @@ public final class ByteArrayMemory implements Memory {
 
     @Override
     public void fill(byte value, int fromIndex, int toIndex) {
-        try {
-            int addr = fromIndex;
-            int remaining = toIndex - fromIndex;
-            while (remaining > 0) {
-                int pageIdx = addr >>> PAGE_SHIFT;
-                int pageOffset = addr & PAGE_MASK;
-                int chunk = Math.min(remaining, PAGE_SIZE - pageOffset);
-                Arrays.fill(pages[pageIdx], pageOffset, pageOffset + chunk, value);
-                addr += chunk;
-                remaining -= chunk;
-            }
-        } catch (RuntimeException e) {
-            throw outOfBoundsException(e, fromIndex, toIndex - fromIndex);
+        int addr = fromIndex;
+        int remaining = toIndex - fromIndex;
+        checkBounds(addr, remaining, sizeInBytes(), WasmRuntimeException::new);
+        while (remaining > 0) {
+            int pageIdx = addr >>> PAGE_SHIFT;
+            int pageOffset = addr & PAGE_MASK;
+            int chunk = Math.min(remaining, PAGE_SIZE - pageOffset);
+            Arrays.fill(pages[pageIdx], pageOffset, pageOffset + chunk, value);
+            addr += chunk;
+            remaining -= chunk;
+        }
+    }
+
+    @Override
+    public void copy(int dest, int src, int size) {
+        int limit = sizeInBytes();
+        checkBounds(dest, size, limit, WasmRuntimeException::new);
+        checkBounds(src, size, limit, WasmRuntimeException::new);
+        while (size > 0) {
+            int destOffset = dest & PAGE_MASK;
+            int srcOffset = src & PAGE_MASK;
+            int chunk = Math.min(size, PAGE_SIZE - Math.max(destOffset, srcOffset));
+            System.arraycopy(
+                    pages[src >>> PAGE_SHIFT],
+                    srcOffset,
+                    pages[dest >>> PAGE_SHIFT],
+                    destOffset,
+                    chunk);
+            dest += chunk;
+            src += chunk;
+            size -= chunk;
         }
     }
 
@@ -778,7 +786,7 @@ public final class ByteArrayMemory implements Memory {
                 // leverage that 0xFFFF is identity for and
                 int alignedOff = off & ~3;
                 int shift = (off & 2) * 8;
-                int intMask = (mask << shift) | ~(0xFFFF << shift);
+                int intMask = ((mask & 0xFFFF) << shift) | ~(0xFFFF << shift);
                 int intValue = (int) INT_ARR_HANDLE.getAndBitwiseAnd(page, alignedOff, intMask);
                 return (short) ((intValue >>> shift) & 0xFFFF);
             }
@@ -956,7 +964,7 @@ public final class ByteArrayMemory implements Memory {
                 // leverage that 0x0000 is identity for or
                 int alignedOff = off & ~3;
                 int shift = (off & 2) * 8;
-                int intMask = (mask << shift);
+                int intMask = ((mask & 0xFFFF) << shift);
                 int intValue = (int) INT_ARR_HANDLE.getAndBitwiseOr(page, alignedOff, intMask);
                 return (short) ((intValue >>> shift) & 0xFFFF);
             }
@@ -1253,7 +1261,7 @@ public final class ByteArrayMemory implements Memory {
                 // leverage that 0x0000 is identity for xor
                 int alignedOff = off & ~3;
                 int shift = (off & 2) * 8;
-                int intMask = (mask << shift);
+                int intMask = ((mask & 0xFFFF) << shift);
                 int intValue = (int) INT_ARR_HANDLE.getAndBitwiseXor(page, alignedOff, intMask);
                 return (short) ((intValue >>> shift) & 0xFFFF);
             }
