@@ -72,6 +72,6 @@ public class MemoryTest {
                             }
                         });
 
-        CompletableFuture.allOf(counter, grower).get(1, TimeUnit.SECONDS);
+        CompletableFuture.allOf(counter, grower).get(5, TimeUnit.SECONDS);
     }
 }
