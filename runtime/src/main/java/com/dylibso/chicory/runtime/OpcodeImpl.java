@@ -84,7 +84,7 @@ public final class OpcodeImpl {
 
     @OpCodeIdentifier(OpCode.I32_GE_U)
     public static int I32_GE_U(int a, int b) {
-        return Integer.compareUnsigned(a, b) >= 0 ? TRUE : FALSE;
+        return Long.compareUnsigned(a & 0xFFFFFFFFL, b & 0xFFFFFFFFL) >= 0 ? TRUE : FALSE;
     }
 
     @OpCodeIdentifier(OpCode.I32_GT_S)
